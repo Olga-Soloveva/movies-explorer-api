@@ -1,3 +1,5 @@
+// const { NODE_ENV, DATA_BASE_URL } = process.env;
+
 require('dotenv').config();
 
 const express = require('express');
@@ -26,6 +28,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/bitfilmsdb');
+// mongoose.connect(NODE_ENV === 'production' ? DATA_BASE_URL : 'mongodb://localhost:27017/bitfilmsdb');
 
 app.use(requestLogger);
 
