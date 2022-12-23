@@ -9,10 +9,18 @@ const ServerError = require('../errors/server-err');
 const NotFoundError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-err');
 
+const {
+  NOT_FOUND_MESSAGE,
+  SERVER_ERROR_MESSAGE,
+  BAD_REQUEST_MESSAGE,
+  UNAUTHORIZED_ERR_MESSAGE,
+  CONFLICT_ERR_MESSAGE
+} = require('../utils/constants');
+
 module.exports.getUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => res.send(user))
-    .catch(() => next(new ServerError('На сервере произошла ошибка')));
+    .catch(() => next(new ServerError(SERVER_ERROR_MESSAGE)));
 };
 
 module.exports.updateUser = (req, res, next) => {
@@ -29,16 +37,16 @@ module.exports.updateUser = (req, res, next) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
-        next(new NotFoundError('Запрашиваемый пользователь не найден'));
+        next(new NotFoundError(NOT_FOUND_MESSAGE));
       } else {
         return res.send(user);
       }
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
+        next(new BadRequestError(BAD_REQUEST_MESSAGE));
       } else {
-        next(new ServerError('На сервере произошла ошибка'));
+        next(new ServerError(SERVER_ERROR_MESSAGE));
       }
     });
 };
@@ -49,12 +57,12 @@ module.exports.login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        throw new UnauthorizedError('Неправильные почта или пароль');
+        throw new UnauthorizedError(UNAUTHORIZED_ERR_MESSAGE);
       }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            next(new UnauthorizedError('Неправильные почта или пароль'));
+            next(new UnauthorizedError(UNAUTHORIZED_ERR_MESSAGE));
           }
           return user;
         });
@@ -87,11 +95,11 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        next(new ConflictError('Пользователь с таким email уже существует'));
+        next(new ConflictError(CONFLICT_ERR_MESSAGE));
       } else if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
+        next(new BadRequestError(BAD_REQUEST_MESSAGE));
       } else {
-        next(new ServerError('На сервере произошла ошибка'));
+        next(new ServerError(SERVER_ERROR_MESSAGE));
       }
     });
 };
