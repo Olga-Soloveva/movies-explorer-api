@@ -1,7 +1,7 @@
-const { NODE_ENV, JWT_SECRET } = process.env;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const { JWT_KEY } = require('../utils/config');
 
 const UnauthorizedError = require('../errors/unauthorized-err');
 const BadRequestError = require('../errors/bad-request-err');
@@ -14,7 +14,7 @@ const {
   SERVER_ERROR_MESSAGE,
   BAD_REQUEST_MESSAGE,
   UNAUTHORIZED_ERR_MESSAGE,
-  CONFLICT_ERR_MESSAGE
+  CONFLICT_ERR_MESSAGE,
 } = require('../utils/constants');
 
 module.exports.getUser = (req, res, next) => {
@@ -68,7 +68,7 @@ module.exports.login = (req, res, next) => {
         });
     })
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key');
+      const token = jwt.sign({ _id: user._id }, JWT_KEY);
       return res.send({ token, message: 'Авторизация прошла успешно' });
     })
     .catch(next);
@@ -90,7 +90,7 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => {
       // eslint-disable-next-line no-param-reassign
       user.password = undefined;
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key');
+      const token = jwt.sign({ _id: user._id }, JWT_KEY);
       res.send({ token, user });
     })
     .catch((err) => {
