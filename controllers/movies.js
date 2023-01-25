@@ -13,6 +13,13 @@ const {
 
 module.exports.getMovies = (req, res, next) => {
   Movie.find({})
+    .then((movies) => {
+      const userMovies = movies.filter((movie) => {
+        const movieOwner = movie.owner._id.toString();
+        return req.user._id === movieOwner;
+      });
+      return userMovies;
+    })
     .then((movies) => res.send(movies))
     .catch(next);
 };

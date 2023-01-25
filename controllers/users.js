@@ -58,18 +58,18 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       if (!user) {
         throw new UnauthorizedError(UNAUTHORIZED_ERR_MESSAGE);
+      } else {
+        return bcrypt.compare(password, user.password)
+          // eslint-disable-next-line consistent-return
+          .then((matched) => {
+            if (!matched) {
+              next(new UnauthorizedError(UNAUTHORIZED_ERR_MESSAGE));
+            } else {
+              const token = jwt.sign({ _id: user._id }, JWT_KEY);
+              return res.send({ token, message: 'Авторизация прошла успешно' });
+            }
+          });
       }
-      return bcrypt.compare(password, user.password)
-        .then((matched) => {
-          if (!matched) {
-            next(new UnauthorizedError(UNAUTHORIZED_ERR_MESSAGE));
-          }
-          return user;
-        });
-    })
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_KEY);
-      return res.send({ token, message: 'Авторизация прошла успешно' });
     })
     .catch(next);
 };

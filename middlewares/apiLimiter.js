@@ -3,7 +3,7 @@ const { LIMIT_API_ERROR_MESSAGE } = require('../utils/constants');
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 100000,
   message: LIMIT_API_ERROR_MESSAGE,
   standardHeaders: true,
   legacyHeaders: false,
