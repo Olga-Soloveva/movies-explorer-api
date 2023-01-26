@@ -1,6 +1,5 @@
 const {
   BAD_REQUEST_CODE,
-
 } = require('../utils/constants');
 
 class BadRequestError extends Error {

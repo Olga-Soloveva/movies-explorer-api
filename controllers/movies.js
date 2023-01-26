@@ -1,5 +1,4 @@
 const Movie = require('../models/movie');
-
 const BadRequestError = require('../errors/bad-request-err');
 const ServerError = require('../errors/server-err');
 const NotFoundError = require('../errors/not-found-err');
