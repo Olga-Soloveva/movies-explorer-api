@@ -4,7 +4,7 @@
 
 Ссылка на репозиторй: [https://github.com/Olga-Soloveva/movies-explorer-api]
 
-IP 51.250.27.209
+IP 84.201.164.104
 Backend https://api.olgatovstaya.beatfilm.nomoredomains.club
 
 ## Функциональность проекта

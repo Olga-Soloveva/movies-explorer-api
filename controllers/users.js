@@ -26,22 +26,29 @@ module.exports.getUser = (req, res, next) => {
 module.exports.updateUser = (req, res, next) => {
   const { name, email } = req.body;
 
-  User.findByIdAndUpdate(
-    req.user._id,
-    { name, email },
-    {
-      new: true,
-      runValidators: true,
-    },
-  )
-    // eslint-disable-next-line consistent-return
-    .then((user) => {
-      if (!user) {
-        next(new NotFoundError(NOT_FOUND_MESSAGE));
-      } else {
-        return res.send(user);
-      }
-    })
+  // eslint-disable-next-line consistent-return
+  User.findOne({ email }).then((data) => {
+    if (!data || (data._id.toString() === req.user._id)) {
+      User.findByIdAndUpdate(
+        req.user._id,
+        { name, email },
+        {
+          new: true,
+          runValidators: true,
+        },
+      )
+        // eslint-disable-next-line consistent-return
+        .then((user) => {
+          if (!user) {
+            next(new NotFoundError(NOT_FOUND_MESSAGE));
+          } else {
+            return res.send(user);
+          }
+        });
+    } else {
+      next(new ConflictError(CONFLICT_ERR_MESSAGE));
+    }
+  })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError(BAD_REQUEST_MESSAGE));
@@ -54,39 +61,39 @@ module.exports.updateUser = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
-  User.findOne({ email }).select('+password')
+  User.findOne({ email })
+    .select('+password')
     .then((user) => {
       if (!user) {
         throw new UnauthorizedError(UNAUTHORIZED_ERR_MESSAGE);
       } else {
-        return bcrypt.compare(password, user.password)
-          // eslint-disable-next-line consistent-return
-          .then((matched) => {
-            if (!matched) {
-              next(new UnauthorizedError(UNAUTHORIZED_ERR_MESSAGE));
-            } else {
-              const token = jwt.sign({ _id: user._id }, JWT_KEY);
-              return res.send({ token, message: 'Авторизация прошла успешно' });
-            }
-          });
+        return (
+          bcrypt
+            .compare(password, user.password)
+            // eslint-disable-next-line consistent-return
+            .then((matched) => {
+              if (!matched) {
+                next(new UnauthorizedError(UNAUTHORIZED_ERR_MESSAGE));
+              } else {
+                const token = jwt.sign({ _id: user._id }, JWT_KEY);
+                return res.send({
+                  token,
+                  message: 'Авторизация прошла успешно',
+                });
+              }
+            })
+        );
       }
     })
     .catch(next);
 };
 
 module.exports.createUser = (req, res, next) => {
-  const {
-    email,
-    password,
-    name,
-  } = req.body;
+  const { email, password, name } = req.body;
 
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      email,
-      password: hash,
-      name,
-    }))
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => User.create({ email, password: hash, name }))
     .then((user) => {
       // eslint-disable-next-line no-param-reassign
       user.password = undefined;
