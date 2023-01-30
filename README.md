@@ -1,18 +1,25 @@
 # Бэкенд проекта BeatFilm
+Автор: Товстая Ольга
 
 ## Описание
-
-Ссылка на репозиторй: [https://github.com/Olga-Soloveva/movies-explorer-api]
-
-IP 84.201.164.104
-Backend https://api.olgatovstaya.beatfilm.nomoredomains.club
+Проект BeatFilm - это сайт с возможность поиска фильмов через внешний api, a также доабвление фильмов в сохраненные в своей БД.
+Cайт сделан в рамках обучения по професии "Веб разработчик" в Яндекс Практикуме.
 
 ## Функциональность проекта
 
 __Стэк__: Express.js, MongoDB
+ 
+* Создана база данных MongoDB
+* Cервер развернут через Express.js. 
+* Связь с фронтендом через REST API
+* Бэкенд производит регистрацию и авторизацию пользователей, редактирование данных пользователя, сохранение фильма и удаление из сохраненных.
+
+## Frontend проекта
+GitHub [https://github.com/Olga-Soloveva/movies-explorer-frontend]   
+Сайт [https://olgatovstaya.beatfilm.nomoredomains.club]
 
 ## Запуск проекта
 
-`npm install` — установить зависимости
+`npm install` — установить зависимости   
 `npm run start` — запускает сервер   
 `npm run dev` — запускает сервер с hot-reload
